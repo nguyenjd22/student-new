@@ -178,7 +178,7 @@ class CharCorruptionDataset(Dataset):
         else:
             trunc_doc = document
 
-        masked_content_len = random.gauss(len(trunc_doc) / 4, 0.5)
+        masked_content_len = random.gauss(len(trunc_doc) / 4, 0.05)
         if masked_content_len < 1:
             masked_content_len = 1
         elif masked_content_len > trunc_len - 2:
