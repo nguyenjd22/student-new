@@ -56,6 +56,7 @@ Don't change above here; write your code below
 
 if args.variant == 'vanilla':
     model = model.GPT(mconf)
+    model = model.to(device)
 elif args.variant == 'synthesizer':
     pass # TODO [part g]: Make some other model here
 
@@ -116,14 +117,14 @@ elif args.function == 'finetune':
         tconf = trainer.TrainerConfig(max_epochs=75, batch_size=256, learning_rate=6e-4, lr_decay=True, warmup_tokens=512*20, final_tokens=200*len(pretrain_dataset)*block_size, num_workers=4)
     else:
         model.load_state_dict(torch.load(args.reading_params_path))
-        model = model.to(device)
+        # model = model.to(device)
         tconf = trainer.TrainerConfig(max_epochs=10, batch_size=256, learning_rate=6e-4, lr_decay=True, warmup_tokens=512*20, final_tokens=200*len(pretrain_dataset)*block_size, num_workers=4)
 
     finetunetext = open(args.finetune_corpus_path, 'r').read()
     finetunedataset = dataset.NameDataset(pretrain_dataset, finetunetext)
     modeltrainer = trainer.Trainer(model, finetunedataset, None, tconf)
     modeltrainer.train()
-    torch.save(gptmodel.state_dict(), args.writing_params_path)
+    torch.save(model.state_dict(), args.writing_params_path)
 
 elif args.function == 'evaluate':
     assert args.outputs_path is not None
